@@ -1,5 +1,10 @@
-from models import MockSetup, Info, APIRequest, Request, Response, RequestMethod
-from utils.GenericFieldParser import GenericFieldParser
+from pysmock.models.MockSetup import MockSetup
+from pysmock.models.Info import Info
+from pysmock.models.Request import Request
+from pysmock.models.Response import Response
+from pysmock.models.APIRequest import APIRequest
+from pysmock.models.APIRequest import RequestMethod
+from .GenericFieldParser import GenericFieldParser
 class ModelParser:
 
   @staticmethod

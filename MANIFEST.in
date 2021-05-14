@@ -1,0 +1,7 @@
+recursive-exclude __pycache__  *.pyc *.pyo *.orig
+include pysmock/templates/*
+include pyproject.toml
+include README.md
+include requirements.txt
+include LICENSE
+include setup.py

@@ -1,0 +1,55 @@
+info:
+  name: "Test APIs"
+  description: "description of your API"
+  version: "v1"
+  title: "GEM - EMBS APIs"
+host: "localhost:8080"
+basePath: "/smbs"
+logging:
+  level: INFO
+apiRequests:
+ - get:
+      request:
+        body:
+          name : test
+        headers:
+          content-type: application/json
+      response:
+        json:
+          campaignId: 1
+          type: CampaignInfo
+        status_code: 200
+      url: campaigns
+      validation:
+        ignore_additional_fields: True
+ - post:
+      request:
+        body:
+          name: "^[A-Za-z0-9 ]+$"
+          type: CampaignDetail
+          status: '^PENDING|ACTIVE|SUSPENDED$'
+          description: Campaign to disable fallback on a certain set of sims
+          target:
+            type: TargetRange
+            start: "^[0-9]+$"
+            end: "^[0-9]+$"
+            data:
+              type: "^GENERIC_APDU$"
+              apduBytes: "^[A-F0-9]*$"
+        headers:
+          content-type: application/json
+      response:
+        json:
+          campaignId: 1
+          type: CampaignInfo
+          description: $request.body.description
+          status: $request.body.status
+          target:
+            type: TargetRange
+            start: "$request.body.target.start"
+            end: "$request.body.target.end"
+            data:
+              type: "$request.body.target.data.type"
+              apduBytes: "$request.body.target.data.apduBytes"
+        status_code: 200
+      url: campaigns
