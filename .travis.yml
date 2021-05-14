@@ -1,0 +1,21 @@
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+install:
+  - pip install --upgrade build
+script:
+  - python set setup.py bdist_wheel
+  - echo "skipping tests"
+branches:
+  only:
+    - master
+after_success:
+  - coveralls
+notifications:
+  email:
+    recipients:
+      - contact.pysmock@gmail.com
+    on_success: always
+    on_failure: always
