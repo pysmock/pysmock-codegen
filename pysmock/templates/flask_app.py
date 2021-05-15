@@ -75,20 +75,31 @@ def api_request_{{loop.index}}():
     current_headers=request.headers
     # logger.debug(current_headers)
     headers_to_check={{apiRequest.request.headers}}
-    error, code = check_headers(current_headers, headers_to_check)
-    if error is not None:
-        return error, code
+    if len(headers_to_check) > 0:
+        error, code = check_headers(current_headers, headers_to_check)
+        if error is not None:
+            return error, code
     requestBody = {{apiRequest.request.body}}
     request_generic_fields={{apiRequest.request.generic_fields}}
-    actualBody = json.loads(request.data)
+    actualBody = None
+    print('Request body is {}'.format(request.data))
+    if request.data is not None and request.data.decode() != '':
+        actualBody = json.loads(request.data)
     errors={}
     errors['data_mismatch']={}
     # print(DeepDiff(requestBody, actualBody,ignore_order=True, exclude_paths=list(map(lambda x: 'root[\''+x.replace('request.','').replace('.','\'][\'')+'\']',list(request_generic_fields.keys())))))
-    errors['data_mismatch']['value']=compare_dicts(dict1=requestBody,dict2= actualBody, exclude_paths=list(map(lambda x: 'root[\''+x.replace('request.','').replace('.','\'][\'')+'\']',list(request_generic_fields.keys()))))
+    if requestBody is not None:
+        errors['data_mismatch']['value']=compare_dicts(dict1=requestBody,dict2= actualBody, exclude_paths=list(map(lambda x: 'root[\''+x.replace('request.','').replace('.','\'][\'')+'\']',list(request_generic_fields.keys()))))
+    if 'value' in errors['data_mismatch'].keys() and errors['data_mismatch']['value'] is not None and len(errors['data_mismatch']['value']) != 0:
+        return jsonify(errors),400
     print(errors)
-    errors['data_mismatch']['regex']=check_request_generic_fields(generic_fields=request_generic_fields, request_body=actualBody)
+    if actualBody is not None:
+        errors['data_mismatch']['regex']=check_request_generic_fields(generic_fields=request_generic_fields, request_body=actualBody)
+    if requestBody is not None and actualBody is None:
+        error['message']='missing request body'
+        return jsonify(error), 400
     print(errors)
-    if len(errors['data_mismatch']['regex']) != 0:
+    if 'regex' in errors['data_mismatch'].keys() and errors['data_mismatch']['regex'] is not None and len(errors['data_mismatch']['regex']) != 0:
         return jsonify(errors),400
     response_generic_fields={{apiRequest.response.generic_fields}}
     response_body={{apiRequest.response.json}}

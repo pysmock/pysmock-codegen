@@ -1,0 +1,31 @@
+info:
+  name: "Test APIs"
+  description: "description of your API"
+  version: "v1"
+  title: "Mock APIs"
+host: "localhost:8080"
+basePath: "/mock"
+apiRequests:
+ - get:
+      request:
+      response:
+        json:
+          resourceId: 1
+          type: ResourceInfo
+        status_code: 200
+      url: resource/1
+ - post:
+      request:
+        body:
+            name: "[A-Za-z0-9 ]*"
+            data: Some data for resource
+        headers:
+          content-type: application/json
+      response:
+        json:
+          resourceId: 1
+          type: ResourceInfo
+          name: $request.body.name
+          data: $request.body.data
+        status_code: 200
+      url: resource

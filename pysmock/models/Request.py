@@ -7,7 +7,10 @@ class Request(YAMLObject):
           body: Dict[str, object]=None,
           generic_fields: Dict[str, str]=None):
         self.url = url
-        self.headers = headers
+        if headers is not None:
+            self.headers = headers
+        else:
+            self.headers = []
         self.body=body
         self.generic_fields = generic_fields
     
