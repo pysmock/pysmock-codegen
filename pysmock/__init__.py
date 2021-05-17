@@ -1,4 +1,4 @@
-__version__ = "0.1.0dev05"
+__version__ = "0.1.0dev06"
 __author__ = 'Harsha Sridhar'
 __author_email__='contact.pysmock@gmail.com'
 __description__='A tool to generate a mock server from yaml file using python'

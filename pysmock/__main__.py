@@ -1,4 +1,5 @@
-
+import pysmock.logger as logger
+log = logger.set_app_level_logger()
 import typer
 from pysmock.utils.ModelParser import ModelParser  
 from typing import Optional, Dict, List
@@ -7,6 +8,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 app=typer.Typer()
 import pathlib
+
 
 path = pathlib.Path(__file__).parent.resolve()    
 
@@ -17,7 +19,7 @@ def main(input_file_name: typer.FileText = typer.Option(...,"--input-file","--in
   if output.exists() and not output.is_dir():
     typer.echo("Output not a directory!")
     exit(1)
-  print(output.absolute())
+  # log.debug(output.absolute())
   generate_code(input_file_name,output)
   pass
 import shutil
@@ -45,7 +47,7 @@ gunicorn==20.0.4''')
   f = open(str(output.absolute())+"/app.py", 'w')
   f.write(template.render(model=model))
   f.close()
-  print('Code Creation completed!')
+  log.info('Code Creation completed!')
   pass
 
 if __name__=='__main__':

@@ -1,3 +1,4 @@
+from pysmock.logger import logger
 from pysmock.models.MockSetup import MockSetup
 from pysmock.models.Info import Info
 from pysmock.models.Request import Request
@@ -5,6 +6,7 @@ from pysmock.models.Response import Response
 from pysmock.models.APIRequest import APIRequest
 from pysmock.models.APIRequest import RequestMethod
 from .GenericFieldParser import GenericFieldParser
+log = logger.get_logger(__name__)
 class ModelParser:
 
   @staticmethod
@@ -50,7 +52,7 @@ class ModelParser:
             if apiRequest[methodValue]['response'] is not None and  apiRequest[methodValue]['response']['json'] is not None:
                 response_generic_fields =GenericFieldParser.find_generic_fields(apiRequest[methodValue]['response']['json'], prefix="response")
                 response_body = apiRequest[methodValue]['response']['json']
-            # print('Generic Fields \n\tReq- {}\n\tRes- {}'.format(request_generic_fields, response_generic_fields))
+            log.debug('Generic Fields \n\tReq- {}\n\tRes- {}'.format(request_generic_fields, response_generic_fields))
             request = Request(url=url, headers=request_headers, body=request_body, generic_fields=request_generic_fields)
             response = Response(status_code=response_headers,json=response_body, generic_fields=response_generic_fields)
             api_req = APIRequest(method=method,request=request, response=response)

@@ -13,7 +13,7 @@ setuptools.setup(
     description=__description__,
     long_description_content_type="text/markdown",
     url="https://github.com/pysmock/pysmock-codegen",
-    packages=setuptools.find_packages(include=['pysmock','pysmock.models','pysmock.utils']),
+    packages=setuptools.find_packages(include=['pysmock','pysmock.models','pysmock.utils','pysmock.logger']),
     # namespace_packages=setuptools.find_packages(include=['pysmock','pysmock.models','pysmock.utils']),
     # console_scripts="pysmock.__main__:main",
     # py_modules=['pysmock/models','pysmock/utils'],

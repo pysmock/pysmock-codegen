@@ -9,6 +9,8 @@ app.config['SECRET_KEY'] = 'my_secret_key'
 
 basePath="{{model.basePath}}"
 
+#utility functions
+
 def check_headers(current_headers, headers_to_check):
     current_headers={k.lower():v for k,v in current_headers.items()}
     request_header_names=current_headers.keys()
@@ -62,7 +64,7 @@ def compare_dicts(dict1={}, dict2={},exclude_paths=[]):
             errors.append(message)
     return errors if len(errors) != 0 else None
 
-#Methods
+#APIs
 
 @app.route(basePath+"/info", methods=['GET'])
 def server_info():
