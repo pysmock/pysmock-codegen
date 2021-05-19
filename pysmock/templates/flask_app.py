@@ -64,6 +64,17 @@ def compare_dicts(dict1={}, dict2={},exclude_paths=[]):
             errors.append(message)
     return errors if len(errors) != 0 else None
 
+def do_params_conform_regex(param_rules, actual_params):
+    errors={}
+    errors['param_mismatch']=[]
+    for param_name in actual_params.keys():
+        if not does_string_match_regex(param_rules[param_name], actual_params[param_name]):
+            message={}
+            message['paramName']=param_name
+            message['errorMessage']="Value for {} = {} does not match regex {}".format(param_name, actual_params[param_name], param_rules[param_name])
+            errors['param_mismatch'].append(message)
+    return errors
+
 #APIs
 
 @app.route(basePath+"/info", methods=['GET'])
@@ -71,16 +82,35 @@ def server_info():
     return jsonify({{model.info}}), 200
 
 {% for  apiRequest in model.apiRequests %}
-
+{% set hasPathParam = True if apiRequest.request.params is not none and apiRequest.request.params.path is not none else False%}
+{% set params = [] %}
+{% if hasPathParam %}
+{% for param in apiRequest.request.params.path.keys() %}
+    {{params.append(param)}}
+{% endfor %}
+{% endif %}
 @app.route(basePath+"/{{apiRequest.request.url}}", methods=["{{apiRequest.method.value}}"])
-def api_request_{{loop.index}}():
+def api_request_{{loop.index}}({% if hasPathParam %}{{params|join(",")}}{% endif %}):
     current_headers=request.headers
     # logger.debug(current_headers)
     headers_to_check={{apiRequest.request.headers}}
+    
     if len(headers_to_check) > 0:
         error, code = check_headers(current_headers, headers_to_check)
         if error is not None:
             return error, code
+
+    {% if hasPathParam %}
+    path_param_rules={{apiRequest.request.params.path}}
+    actual_params={}
+    {% for  param in params %}
+    actual_params['{{param}}']={{param}}   
+    {% endfor %}
+    errors = do_params_conform_regex(path_param_rules,actual_params)
+    if len(errors['param_mismatch']) != 0:
+        return jsonify(errors), 400
+     
+    {% endif %}
     requestBody = {{apiRequest.request.body}}
     request_generic_fields={{apiRequest.request.generic_fields}}
     actualBody = None
