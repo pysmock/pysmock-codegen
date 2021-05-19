@@ -1,4 +1,8 @@
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)<br>
+[![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
+[![PyPI pyversions](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8%7C3.9-blue)]()
 [![Build Status](https://travis-ci.org/pysmock/pysmock-codegen.svg?branch=master)](https://travis-ci.org/pysmock/pysmock-codegen)
+
 # pysmock
 Python module to generate mock server from yaml file<br>
 Usage: `python3 -m pysmock --input input_data.yaml --output app/`<br>
