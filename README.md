@@ -2,7 +2,7 @@
 [![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
 [![PyPI pyversions](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8%7C3.9-blue)]()
 [![Build Status](https://travis-ci.org/pysmock/pysmock-codegen.svg?branch=master)](https://travis-ci.org/pysmock/pysmock-codegen)
-
+<br><b>Note:</b>This is still in development stage, and will probably have bugs in it, feel free to raise an issue for the same
 # pysmock
 Python module to generate mock server from yaml file<br>
 Usage: `python3 -m pysmock --input input_data.yaml --output app/`<br>
