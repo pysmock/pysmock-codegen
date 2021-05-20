@@ -16,6 +16,11 @@ path = pathlib.Path(__file__).parent.resolve()
 def main(input_file_name: typer.FileText = typer.Option(...,"--input-file","--input","-i"),
         output: Optional[Path]=typer.Option("../dist", exists=False, writable=True)
         ):
+  """
+  Arguments: 
+  :param --input-file, --input, -i -> input yaml file
+  :param --output -> output directory, if exists the contents will be cleared
+  """
   if output.exists() and not output.is_dir():
     typer.echo("Output not a directory!")
     exit(1)

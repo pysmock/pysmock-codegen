@@ -8,6 +8,11 @@ app=Flask(__name__)
 app.config['SECRET_KEY'] = 'my_secret_key'
 
 basePath="{{model.basePath}}"
+from enum import IntEnum
+class HttpStatus(IntEnum):
+    BAD_REQUEST = 400
+    UNAUTHORIZED = 403
+    OK = 200
 
 #utility functions
 
@@ -18,10 +23,10 @@ def check_headers(current_headers, headers_to_check):
     for key in headers_to_check.keys():
         if key not in request_header_names:
             errorMessage = "Headers missing [{}]".format(key)
-            return jsonify(errorMessage), 400
+            return jsonify(errorMessage), int(HttpStatus.BAD_REQUEST)
         elif headers_to_check[key] != current_headers[key]:
             errorMessage = "Headers do not match Expected[{}] got[{}]".format(headers_to_check[key],current_headers[key]) 
-            return jsonify(errorMessage), 400
+            return jsonify(errorMessage), int(HttpStatus.BAD_REQUEST)
     return None, None
 
 
@@ -79,7 +84,7 @@ def do_params_conform_regex(param_rules, actual_params):
 
 @app.route(basePath+"/info", methods=['GET'])
 def server_info():
-    return jsonify({{model.info}}), 200
+    return jsonify({{model.info}}), int(HttpStatus.OK)
 
 {% for  apiRequest in model.apiRequests %}
 {% set hasPathParam = True if apiRequest.request.params is not none and apiRequest.request.params.path is not none else False%}
@@ -108,7 +113,7 @@ def api_request_{{loop.index}}({% if hasPathParam %}{{params|join(",")}}{% endif
     {% endfor %}
     errors = do_params_conform_regex(path_param_rules,actual_params)
     if len(errors['param_mismatch']) != 0:
-        return jsonify(errors), 400
+        return jsonify(errors), int(HttpStatus.BAD_REQUEST)
      
     {% endif %}
     requestBody = {{apiRequest.request.body}}
@@ -123,16 +128,16 @@ def api_request_{{loop.index}}({% if hasPathParam %}{{params|join(",")}}{% endif
     if requestBody is not None:
         errors['data_mismatch']['value']=compare_dicts(dict1=requestBody,dict2= actualBody, exclude_paths=list(map(lambda x: 'root[\''+x.replace('request.','').replace('.','\'][\'')+'\']',list(request_generic_fields.keys()))))
     if 'value' in errors['data_mismatch'].keys() and errors['data_mismatch']['value'] is not None and len(errors['data_mismatch']['value']) != 0:
-        return jsonify(errors),400
+        return jsonify(errors),int(HttpStatus.BAD_REQUEST)
     print(errors)
     if actualBody is not None:
         errors['data_mismatch']['regex']=check_request_generic_fields(generic_fields=request_generic_fields, request_body=actualBody)
     if requestBody is not None and actualBody is None:
         error['message']='missing request body'
-        return jsonify(error), 400
+        return jsonify(error), int(HttpStatus.BAD_REQUEST)
     print(errors)
     if 'regex' in errors['data_mismatch'].keys() and errors['data_mismatch']['regex'] is not None and len(errors['data_mismatch']['regex']) != 0:
-        return jsonify(errors),400
+        return jsonify(errors),int(HttpStatus.BAD_REQUEST)
     response_generic_fields={{apiRequest.response.generic_fields}}
     response_body={{apiRequest.response.json}}
     {% for  key, value in apiRequest.response.generic_fields.items() %}
@@ -140,7 +145,13 @@ def api_request_{{loop.index}}({% if hasPathParam %}{{params|join(",")}}{% endif
         {% set display_str_value = value.replace('$request.body.','').replace('.','\'][\'') %}
     response_body['{{display_str_key}}'] = actualBody['{{display_str_value}}']
     {% endfor %}
-    return jsonify(response_body), {{apiRequest.response.status_code}}
+    response = jsonify(response_body)
+    {% if apiRequest.response.headers is not none%}
+    {% for header,value in apiRequest.response.headers.items() %}
+    response.headers['{{header}}'] = '{{value}}'
+    {% endfor %}
+    {% endif %}
+    return response, {{apiRequest.response.status_code}}
 
 {% endfor %}
 

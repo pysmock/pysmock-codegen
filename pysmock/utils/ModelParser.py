@@ -74,7 +74,7 @@ class ModelParser:
                 response_body = response['json']
             log.debug('Generic Fields \n\tReq- {}\n\tRes- {}'.format(request_generic_fields, response_generic_fields))
             request = Request(url=url, headers=request_headers, body=request_body, generic_fields=request_generic_fields, params=requestParams)
-            response = Response(status_code=response_headers,json=response_body, generic_fields=response_generic_fields)
+            response = Response(status_code=response['status_code'],headers=response_headers,json=response_body, generic_fields=response_generic_fields)
             api_req = APIRequest(method=method,request=request, response=response)
             # print(api_req)
             mockSetup.apiRequests.append(api_req)
