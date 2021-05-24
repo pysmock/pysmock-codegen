@@ -7,6 +7,7 @@ from pysmock.models.APIRequest import APIRequest
 from pysmock.models.APIRequest import RequestMethod
 from pysmock.models.Param import Param
 from pysmock.models.RequestParams import RequestParams
+from pysmock.models.Callback import Callback
 from .GenericFieldParser import GenericFieldParser
 log = logger.get_logger(__name__)
 class ModelParser:
@@ -36,10 +37,14 @@ class ModelParser:
         for apiRequest in yaml_dict['apiRequests']:
             request_generic_fields=[]
             response_generic_fields=[]
+            authorization_headers={}
             methodValue = list(apiRequest.keys())[0]
             method = RequestMethod(methodValue)
             request = apiRequest[methodValue]['request']
             response = apiRequest[methodValue]['response']
+
+            if 'authorization' in apiRequest[methodValue].keys() and apiRequest[methodValue]['authorization'] is not None:
+                authorization_headers = apiRequest[methodValue]['authorization']
 
             url=apiRequest[methodValue]['url']
             request_body = None
@@ -72,10 +77,20 @@ class ModelParser:
             if response is not None and  response['json'] is not None:
                 response_generic_fields =GenericFieldParser.find_generic_fields(response['json'], prefix="response")
                 response_body = response['json']
+            callback=None
+            if response is not None and 'callback' in response.keys() and response['callback'] is not None:
+                callback_url = response['callback']['url']
+                delay = response['callback']['delay']
+                callback_request = response['callback']['request']
+                headers = callback_request['headers']
+                body = callback_request['body']
+                callback_request_generic_fields = GenericFieldParser.find_generic_fields(body,'crequest')
+                callback_request_obj = Request(url=callback_url, headers=headers, body=body, generic_fields=callback_request_generic_fields)
+                callback=Callback(url = callback_url, delay=delay, request=callback_request_obj)
             log.debug('Generic Fields \n\tReq- {}\n\tRes- {}'.format(request_generic_fields, response_generic_fields))
             request = Request(url=url, headers=request_headers, body=request_body, generic_fields=request_generic_fields, params=requestParams)
-            response = Response(status_code=response['status_code'],headers=response_headers,json=response_body, generic_fields=response_generic_fields)
-            api_req = APIRequest(method=method,request=request, response=response)
+            response = Response(status_code=response['status_code'],headers=response_headers,json=response_body, generic_fields=response_generic_fields, callback=callback)
+            api_req = APIRequest(method=method,request=request, response=response, authorization=authorization_headers)
             # print(api_req)
             mockSetup.apiRequests.append(api_req)
     return mockSetup

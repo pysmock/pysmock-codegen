@@ -1,8 +1,11 @@
 from flask import Flask, flash, redirect, request, jsonify, make_response
 import logging as logger
 from deepdiff import DeepDiff
+from threading import Thread
 import json
 import re
+import requests
+import time
 logger.basicConfig(level=logger.DEBUG)
 app=Flask(__name__)
 app.config['SECRET_KEY'] = 'my_secret_key'
@@ -11,7 +14,7 @@ basePath="{{model.basePath}}"
 from enum import IntEnum
 class HttpStatus(IntEnum):
     BAD_REQUEST = 400
-    UNAUTHORIZED = 403
+    UNAUTHORIZED = 401
     OK = 200
 
 #utility functions
@@ -80,6 +83,10 @@ def do_params_conform_regex(param_rules, actual_params):
             errors['param_mismatch'].append(message)
     return errors
 
+def send_callback(url="localhost", headers={}, body={}, delay=0):
+    time.sleep(delay)
+    requests.post(url=url, headers=headers, data=body)
+
 #APIs
 
 @app.route(basePath+"/info", methods=['GET'])
@@ -91,13 +98,22 @@ def server_info():
 {% set params = [] %}
 {% if hasPathParam %}
 {% for param in apiRequest.request.params.path.keys() %}
-    {{params.append(param)}}
+    {% set test=params.append(param) %}
 {% endfor %}
 {% endif %}
 @app.route(basePath+"/{{apiRequest.request.url}}", methods=["{{apiRequest.method.value}}"])
 def api_request_{{loop.index}}({% if hasPathParam %}{{params|join(",")}}{% endif %}):
     current_headers=request.headers
+    authorization_headers_to_check={}
+    {% for header_name, value  in  apiRequest.authorization.items()  %}
+    authorization_headers_to_check["{{header_name}}"]="{{value}}"
+    {% endfor %}
     # logger.debug(current_headers)
+    if len(authorization_headers_to_check.keys()) > 0:
+        error, code = check_headers(current_headers, authorization_headers_to_check)
+        if error is not None:
+            return error, int(HttpStatus.UNAUTHORIZED)
+
     headers_to_check={{apiRequest.request.headers}}
     
     if len(headers_to_check) > 0:
@@ -150,6 +166,26 @@ def api_request_{{loop.index}}({% if hasPathParam %}{{params|join(",")}}{% endif
     {% for header,value in apiRequest.response.headers.items() %}
     response.headers['{{header}}'] = '{{value}}'
     {% endfor %}
+    {% endif %}
+
+    {% if apiRequest.response.callback is not none %}
+    callback_request_body={}
+    {% set included_fields = [] %}
+    {% set c_url = apiRequest.response.callback.url %}
+    {% set c_delay = apiRequest.response.callback.delay %}
+    {% set c_req = apiRequest.response.callback.request %}
+    {% for key, value in c_req.generic_fields.items() %}
+        {% set display_str_key = key.replace('crequest.','').replace('.','\'][\'') %}
+        {% set display_str_value = value.replace('$request.body.','').replace('.','\'][\'') %}
+    callback_request_body['{{display_str_key}}'] = actualBody['{{display_str_value}}']
+        {% set test=included_fields.append(display_str_key) %}
+    {% endfor %}
+    {% for key,value in c_req.body.items() %}
+        {% if key not in included_fields %}
+    callback_request_body['{{key}}']='{{value}}'    
+        {% endif %}
+    {% endfor %}
+    Thread(target=send_callback,kwargs={'url':actualBody["{{c_url.replace('$request.body.','').replace('.','\'][\'')}}"], 'headers': {{c_req.headers}}, 'body': callback_request_body,'delay':{{c_delay}}}).start()
     {% endif %}
     return response, {{apiRequest.response.status_code}}
 
