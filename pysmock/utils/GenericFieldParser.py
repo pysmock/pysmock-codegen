@@ -1,6 +1,18 @@
+"""Utility class to parse generic fields
+"""
 import re
 class GenericFieldParser:
+    """Utility class to parse generic fields
 
+    Methods
+    -------
+    has_special_characters:
+        returns True if the input string has special characters
+    convert_json_to_dot_formatted_fields:
+        converts the given data into json dot formated fields
+    find_generic_fields:
+        returns the list of fields which are generic
+    """
     @staticmethod
     def has_special_characters(input_string): 
         regex= re.compile('[@_!#$%^&*()<>?/\\\|}{~:[\]]') 

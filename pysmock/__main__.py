@@ -1,7 +1,7 @@
 import pysmock.logger as logger
 log = logger.set_app_level_logger()
 import typer
-from pysmock.utils import ModelParser  
+from .utils import ModelParser  
 from typing import Optional, Dict, List
 from pathlib import Path
 import yaml

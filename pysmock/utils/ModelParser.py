@@ -1,8 +1,15 @@
 from pysmock.logger import logger
-from pysmock.models import MockSetup, Info, Request, Response, APIRequest, RequestMethod, Param, RequestParams, Callback
+from ..models import MockSetup, Info, Request, Response, APIRequest, RequestMethod, Param, RequestParams, Callback
 from .GenericFieldParser import GenericFieldParser
 log = logger.get_logger(__name__)
 class ModelParser:
+  """Utility class to parse yaml data into MockSetup object
+
+    Methods
+    -------
+    parseToObject(yaml_dict):
+        returns parsed data
+  """
 
   @staticmethod
   def parseToObject(yaml_dict):
