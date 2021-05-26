@@ -2,6 +2,7 @@
 [![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
 [![PyPI pyversions](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8%7C3.9-blue)]()
 [![Build Status](https://travis-ci.org/pysmock/pysmock-codegen.svg?branch=master)](https://travis-ci.org/pysmock/pysmock-codegen)
+[![Documentation Status](https://readthedocs.org/projects/pysmock-codegen/badge/?version=latest)](https://pysmock-codegen.readthedocs.io/en/latest/?badge=latest)
 [![image](https://drive.google.com/uc?export=view&id=1S4HmfB7d9t7by9_15ucfyZXz_F84UcwR)](https://drive.google.com/file/d/1S4HmfB7d9t7by9_15ucfyZXz_F84UcwR/view)
 <br><b>Note:</b>This is still in development stage, and will probably have bugs in it, feel free to raise an issue for the same
 # pysmock
