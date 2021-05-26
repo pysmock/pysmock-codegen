@@ -85,7 +85,7 @@ def do_params_conform_regex(param_rules, actual_params):
 
 def send_callback(url="localhost", headers={}, body={}, delay=0):
     time.sleep(delay)
-    requests.post(url=url, headers=headers, data=body)
+    requests.post(url=url, headers=headers, data=json.dumps(body))
 
 #APIs
 

@@ -1,13 +1,5 @@
 from pysmock.logger import logger
-from pysmock.models.MockSetup import MockSetup
-from pysmock.models.Info import Info
-from pysmock.models.Request import Request
-from pysmock.models.Response import Response
-from pysmock.models.APIRequest import APIRequest
-from pysmock.models.APIRequest import RequestMethod
-from pysmock.models.Param import Param
-from pysmock.models.RequestParams import RequestParams
-from pysmock.models.Callback import Callback
+from pysmock.models import MockSetup, Info, Request, Response, APIRequest, RequestMethod, Param, RequestParams, Callback
 from .GenericFieldParser import GenericFieldParser
 log = logger.get_logger(__name__)
 class ModelParser:

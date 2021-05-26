@@ -1,7 +1,7 @@
 import pysmock.logger as logger
 log = logger.set_app_level_logger()
 import typer
-from pysmock.utils.ModelParser import ModelParser  
+from pysmock.utils import ModelParser  
 from typing import Optional, Dict, List
 from pathlib import Path
 import yaml
@@ -17,6 +17,9 @@ def main(input_file_name: typer.FileText = typer.Option(...,"--input-file","--in
         output: Optional[Path]=typer.Option("../dist", exists=False, writable=True)
         ):
   """
+  Entrypoint for the module
+  Parameters
+  ----------
   Arguments: 
   :param --input-file, --input, -i -> input yaml file
   :param --output -> output directory, if exists the contents will be cleared
