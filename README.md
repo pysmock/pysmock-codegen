@@ -7,6 +7,7 @@
 <br><b>Note:</b>This is still in development stage, and will probably have bugs in it, feel free to raise an issue for the same
 # pysmock
 Python module to generate mock server from yaml file<br>
+[Documentation](pysmock-codegen.readthedocs.io/)<br>
 Usage: `python3 -m pysmock --input input_data.yaml --output app/`<br>
 ## Sample YAML File
 
